@@ -159,21 +159,3 @@ spec:
       input:
         repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: /catalog-info.yaml
-
-    - id: deploy-tekton-pipeline
-      name: Deploy Tekton Pipeline via ArgoCD App
-      action: argocd:create-resources
-      input:
-        projectName: ${{ parameters.repoName }}-argocd-tekton-pipeline
-        appName: ${{ parameters.repoName }}-tekton-ci
-        argoInstance: default
-        namespace: ${{ parameters.namespace }}
-        repoUrl: ${{ "https://github.com/" + parameters.orgName + "/" + parameters.repoName + ".git" }}
-        path: 'tekton'
-
-    - id: register-api
-      name: Registering the API
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: /api-info.yaml
