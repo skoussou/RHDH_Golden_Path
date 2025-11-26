@@ -83,7 +83,6 @@ spec:
           title: ArgoCD Password
           type: string
           description: The password for ArgoCD login
-          default: 4BxbuHDeyr8PpLT67IgRtQZVNqWkajv1
       required:
         - argocdServer
         - argocdUsername
@@ -127,6 +126,9 @@ spec:
           projectName: ${{ parameters.projectName }}
           apikey: ${{ parameters.apikey }}
           clusterid: ${{ parameters.clusterid }}
+          argocdServer: ${{ parameters.argocdServer }}
+          argocdUsername: ${{ parameters.argocdUsername }}
+          argocdPassword: ${{ parameters.argocdPassword }}
 
     - id: deployManifests
       name: "Generating deployment manifests"
@@ -159,3 +161,14 @@ spec:
       input:
         repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: /catalog-info.yaml
+
+    - id: deploy-tekton-pipeline
+      name: Deploy Tekton Pipeline via ArgoCD App
+      action: argocd:create-resources
+      input:
+        projectName: ${{ parameters.repoName }}-argocd-tekton-pipeline
+        appName: ${{ parameters.repoName }}-tekton-ci
+        argoInstance: default
+        namespace: ${{ parameters.namespace }}
+        repoUrl: ${{ "https://github.com/" + parameters.orgName + "/" + parameters.repoName + ".git" }}
+        path: 'tekton'
